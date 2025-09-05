@@ -1,13 +1,17 @@
 package com.Eleonor.ScreenMatch.principal;
 
 import com.Eleonor.ScreenMatch.models.episodios.DatosEpisodio;
+import com.Eleonor.ScreenMatch.models.episodios.Episodio;
 import com.Eleonor.ScreenMatch.models.serie.DatosSerie;
+import com.Eleonor.ScreenMatch.models.serie.ISerieRepository;
+import com.Eleonor.ScreenMatch.models.serie.Serie;
 import com.Eleonor.ScreenMatch.models.temporadas.DatosTemporada;
 import com.Eleonor.ScreenMatch.service.ConsumoAPI;
 import com.Eleonor.ScreenMatch.service.ConvierteDatos;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class Principal {
@@ -17,27 +21,49 @@ public class Principal {
     private Scanner scanner = new Scanner(System.in);
     private final String URL_BASE = "https://www.omdbapi.com/?t=";
     private final String API_KEY = "&apikey=a59e1ae9";
+    private ISerieRepository repository;
+    private Optional<Serie> serie;
 
 
-    public DatosSerie buscarSerie(){
-        System.out.println("Ingrese el nombre de la Serie");
-        var nombreSerie = scanner.nextLine();
-        var serieJson = consumoAPI.obtenerDatos(URL_BASE+nombreSerie.replace(" ","+")+API_KEY);
+
+
+
+
+
+
+    public Optional<DatosSerie> datosSerie(String movieTitle){
+
+        movieTitle = movieTitle.replace(" ","+");
+        var serieJson = consumoAPI.obtenerDatos(URL_BASE + movieTitle + API_KEY);
         DatosSerie datosSerie = conversor.obtenerDatos(serieJson, DatosSerie.class);
-        System.out.println(datosSerie);
-        return datosSerie;
+
+        if (datosSerie.titulo() == null || datosSerie.titulo().isBlank()) {
+            return Optional.empty();
+        }
+        return Optional.of(datosSerie);
     }
 
-    public DatosTemporada buscarEpisodio(){
+    public void buscarSerie(){
         List<DatosTemporada> temporadas = new ArrayList<>();
-        System.out.println("Ingrese el nombre de la serie");
-        var nombreSerie = scanner.nextLine();
-        nombreSerie = nombreSerie.replace(" ","+");
-        var episodiosJson = consumoAPI.obtenerDatos(URL_BASE + nombreSerie + "&season=1" + API_KEY);
-        DatosTemporada datosTemporada = conversor.obtenerDatos(episodiosJson, DatosTemporada.class);
+        System.out.println("Ingrese el titulo de su serie");
+        var movieTitle = scanner.nextLine();
+        Optional<DatosSerie> datosSerie = datosSerie(movieTitle);
 
-        System.out.println(datosTemporada);
-        return  datosTemporada;
+        datosSerie.ifPresentOrElse(mySerie ->{
+            for (int i = 1; i <= mySerie.totalTemporadas() ; i++) {
+                var temporadaJson = consumoAPI.obtenerDatos(URL_BASE + movieTitle + "&season=" + i + API_KEY);
+                DatosTemporada datosTemporada = conversor.obtenerDatos(temporadaJson, DatosTemporada.class);
+                temporadas.add(datosTemporada);
+            }
+        },()->{
+            System.out.println("No se encontro la serie: " + movieTitle);
+        });
+
+        temporadas.forEach(System.out::println);
+
     }
+
+
+
 
 }

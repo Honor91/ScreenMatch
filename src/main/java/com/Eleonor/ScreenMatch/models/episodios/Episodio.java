@@ -9,6 +9,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name="episodios")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Episodio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +24,7 @@ public class Episodio {
     @ManyToOne()
     @JoinColumn(name="serie_id",nullable = false)
     private Serie serie;
+
 
 
     public Integer getTemporada() {

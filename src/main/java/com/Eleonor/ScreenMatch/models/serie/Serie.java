@@ -8,6 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "series")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Serie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +24,6 @@ public class Serie {
     private String sinopsis;
 
     @OneToMany(mappedBy = "serie",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-
     private List<Episodio> episodios;
 
 
