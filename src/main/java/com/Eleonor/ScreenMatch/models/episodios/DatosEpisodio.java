@@ -9,7 +9,7 @@ import java.time.LocalDate;
 public record DatosEpisodio(
         @JsonAlias("Title") String titulo,
         @JsonAlias("Released") String fechaLanzamiento,
-        @JsonAlias("Episode") String numeroEpisodio,
+        @JsonAlias("Episode") Integer numeroEpisodio,
         @JsonAlias("imdbRating") String evaluacion
 
 ) {
