@@ -35,4 +35,12 @@ public enum Categoria {
         }
         throw new IllegalArgumentException("Ninguna categoria encontrada: " + text);
     }
+
+    public static Categoria fromName(String text){
+        try {
+            return Categoria.valueOf(text.toUpperCase());
+        } catch (IllegalArgumentException e){
+            throw new IllegalArgumentException("Ninguna categoria encontrada: " + text);
+        }
+    }
 }

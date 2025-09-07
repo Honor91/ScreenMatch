@@ -2,6 +2,7 @@ package com.Eleonor.ScreenMatch.principal;
 
 import com.Eleonor.ScreenMatch.models.episodios.DatosEpisodio;
 import com.Eleonor.ScreenMatch.models.episodios.Episodio;
+import com.Eleonor.ScreenMatch.models.serie.Categoria;
 import com.Eleonor.ScreenMatch.models.serie.DatosSerie;
 import com.Eleonor.ScreenMatch.models.serie.ISerieRepository;
 import com.Eleonor.ScreenMatch.models.serie.Serie;
@@ -22,7 +23,10 @@ public class Principal {
     private ISerieRepository repository;
     private List<Serie> series;
     private Optional<Serie> serieBuscada;
+
     private String movieTitle;
+
+
     public Principal(ISerieRepository repository) {
         this.repository = repository;
     }
@@ -36,6 +40,8 @@ public class Principal {
                 1.- Buscar Serie
                 2.- Listar Series de mi Base de datos
                 3.- Buscar Series por nombre en BD
+                4.- Top 5 based on evaluations
+                5.- Buscar Series por categorias
                 0.- Salir
                 """);
 
@@ -55,6 +61,9 @@ public class Principal {
                 case 4:
                     buscarTop5Series();
                     break;
+                case 5:
+                    buscarSeriesPorCategoria();
+                    break;
                 case 0:
                     System.out.println("Closing app");
                     break;
@@ -66,8 +75,26 @@ public class Principal {
 
     }
 
+    private void buscarSeriesPorCategoria() {
+        System.out.println("Escriba una de las siguientes categorias");
+        System.out.println(Arrays.toString(Categoria.values()));
+        var myCategory = scanner.nextLine();
+        myCategory = myCategory.toUpperCase();
+        var cat = Categoria.fromName(myCategory);
+        series = repository.findByGenero(cat);
+        if ( series.isEmpty()){
+            System.out.println("Lo sentimos no tenemos series en esa categoria");
+        } else {
+            System.out.println("Encontramos las siguientes series: ");
+            series.forEach( s -> System.out.println(s.getTitulo()));
+        }
+
+    }
+
     private void buscarTop5Series() {
-        series = repository.findTop5ByOrderByEvaluacionesDesc();
+        series = repository.findTop5ByOrderByEvaluacionDesc();
+        series.forEach( s -> System.out.println("Serie: " + s.getTitulo() + ", Evaluacion: " + s.getEvaluacion()));
+
     }
 
     private void buscarSeriesEnBaseDeDatos() {
@@ -88,7 +115,6 @@ public class Principal {
                 .sorted(Comparator.comparing(Serie::getGenero))
                 .forEach(System.out::println);
     }
-
 
     public Optional<DatosSerie> datosSerie(String movieTitle){
 
