@@ -9,10 +9,7 @@ import com.Eleonor.ScreenMatch.models.temporadas.DatosTemporada;
 import com.Eleonor.ScreenMatch.service.ConsumoAPI;
 import com.Eleonor.ScreenMatch.service.ConvierteDatos;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Principal {
@@ -23,8 +20,9 @@ public class Principal {
     private final String URL_BASE = "https://www.omdbapi.com/?t=";
     private final String API_KEY = "&apikey=a59e1ae9";
     private ISerieRepository repository;
-    private Optional<Serie> serie;
-
+    private List<Serie> series;
+    private Optional<Serie> serieBuscada;
+    private String movieTitle;
     public Principal(ISerieRepository repository) {
         this.repository = repository;
     }
@@ -36,6 +34,8 @@ public class Principal {
                 Please select any option
                 
                 1.- Buscar Serie
+                2.- Listar Series de mi Base de datos
+                3.- Buscar Series por nombre en BD
                 0.- Salir
                 """);
 
@@ -45,6 +45,15 @@ public class Principal {
             switch (selectedNumber){
                 case 1:
                     buscarSerie();
+                    break;
+                case 2:
+                    listarSeriesEnBaseDeDatos();
+                    break;
+                case 3:
+                    buscarSeriesEnBaseDeDatos();
+                    break;
+                case 4:
+                    buscarTop5Series();
                     break;
                 case 0:
                     System.out.println("Closing app");
@@ -57,14 +66,33 @@ public class Principal {
 
     }
 
+    private void buscarTop5Series() {
+        series = repository.findTop5ByOrderByEvaluacionesDesc();
+    }
 
+    private void buscarSeriesEnBaseDeDatos() {
+        System.out.println("Ingrese el nombre de la serie a buscar en la base de datos");
+        var myfavoriteSerie = scanner.nextLine();
+        myfavoriteSerie = myfavoriteSerie.replace(" ","+");
+        Optional<Serie> serie = repository.findByTituloContainsIgnoreCase(myfavoriteSerie);
+        if (serie.isPresent()){
+            System.out.println(serie);
+        } else {
+            System.out.println("La serie" + myfavoriteSerie + " no se encuentra en la base de datos");
+        }
+    }
 
-
+    private void listarSeriesEnBaseDeDatos() {
+        series = repository.findAll();
+        series.stream()
+                .sorted(Comparator.comparing(Serie::getGenero))
+                .forEach(System.out::println);
+    }
 
 
     public Optional<DatosSerie> datosSerie(String movieTitle){
 
-        movieTitle = movieTitle.replace(" ","+");
+
         var serieJson = consumoAPI.obtenerDatos(URL_BASE + movieTitle + API_KEY);
         DatosSerie datosSerie = conversor.obtenerDatos(serieJson, DatosSerie.class);
 
@@ -77,7 +105,8 @@ public class Principal {
     public void buscarSerie(){
         List<DatosTemporada> temporadas = new ArrayList<>();
         System.out.println("Ingrese el titulo de su serie");
-        var movieTitle = scanner.nextLine();
+        movieTitle = scanner.nextLine();
+        movieTitle = movieTitle.replace(" ","+");
         Optional<DatosSerie> datosSerie = datosSerie(movieTitle);
 
         datosSerie.ifPresentOrElse(mySerie ->{
@@ -92,9 +121,15 @@ public class Principal {
                             .map(e->new Episodio(dt.numero(),e)))
                     .collect(Collectors.toList());
 
-            newSerie.setEpisodios(episodios);
-            repository.save(newSerie);
-            System.out.println(newSerie);
+            serieBuscada = repository.findByTituloContainsIgnoreCase(movieTitle);
+            if (serieBuscada.isPresent()){
+                System.out.println("La serie ya se encuentra en la base de datos");
+            } else {
+                newSerie.setEpisodios(episodios);
+                repository.save(newSerie);
+                System.out.println("Serie: "+ movieTitle + "fue agregada a la base de forma satisfactoria");
+            }
+            
         },()->{
             System.out.println("No se encontro la serie: " + movieTitle);
         });
@@ -102,7 +137,6 @@ public class Principal {
 
 
     }
-
 
 
 

@@ -15,13 +15,13 @@ public class Episodio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false,columnDefinition = "INT DEFAULT 1")
+    @Column(nullable = false)
     private Integer temporada = 1;
-    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT ''")
+    @Column(nullable = false)
     private String titulo = "";
-    @Column(nullable = false,columnDefinition = "DATE DEFAULT NULL")
+
     private LocalDate fechaDeLanzamiento;
-    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
+    @Column(nullable = false)
     private Integer numeroEpisodio;
     @Column(nullable = false)
     private Double evaluacion = 0.0;

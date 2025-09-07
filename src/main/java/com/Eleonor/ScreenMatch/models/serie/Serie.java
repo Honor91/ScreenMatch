@@ -14,25 +14,26 @@ public class Serie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true, nullable = false, columnDefinition = "VARCHAR(255) DEFAULT ''")
+    @Column(unique = true, nullable = false)
     private String titulo = "";
-    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
+    @Column(nullable = false)
     private Integer totalTemporadas= 0;
     @Column(nullable = false)
     private double evaluacion = 0.0;
-    @Column(nullable = false, columnDefinition = "VARCHAR(500) DEFAULT ''")
+    @Column(nullable = false)
     private String poster = "";
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'DESCONOCIDO'")
+    @Column(length = 50, nullable = false)
     private Categoria genero;
-    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT ''")
+    @Column(nullable = false)
     private String actores = "";
-    @Column(nullable = false, columnDefinition = "TEXT DEFAULT ''")
+    @Column(nullable = false)
     private String sinopsis = "";
 
-    @OneToMany(mappedBy = "serie",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "serie",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Episodio> episodios;
 
+    public Serie(){}
     public Serie(DatosSerie datosSerie){
         this.titulo = datosSerie.titulo();
         this.totalTemporadas = datosSerie.totalTemporadas();
@@ -106,7 +107,8 @@ public class Serie {
                 "Poster: " + poster + "\n" +
                 "Genero: " + genero + "\n" +
                 "Actores: " + actores + "\n" +
-                "Sinopsis: " + sinopsis + "\n" +
-                "Episodios: " + episodios;
+                "Sinopsis: " + sinopsis + "\n"
+//                +"Episodios: " + episodios
+                ;
     }
 }
