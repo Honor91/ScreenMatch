@@ -19,7 +19,6 @@ public class Episodio {
     private Integer temporada = 1;
     @Column(nullable = false)
     private String titulo = "";
-
     private LocalDate fechaDeLanzamiento;
     @Column(nullable = false)
     private Integer numeroEpisodio;

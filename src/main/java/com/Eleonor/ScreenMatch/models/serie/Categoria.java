@@ -9,8 +9,9 @@ public enum Categoria {
     CRIMEN("Crime","Crimen"),
     HISTORY("History","Historia"),
     AVENTURA("adventure","Aventura"),
-    ANIMACION("Animation","Animación");
-
+    ANIMACION("Animation","Animación"),
+    DOCUMENTAL("Documentary","Documental"),
+    FANTASIA("Fantasy","Fantasia");
     private String categoriaOmdb;
     private String categoriaEspanol;
 
