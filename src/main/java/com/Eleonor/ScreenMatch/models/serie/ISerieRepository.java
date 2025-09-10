@@ -1,5 +1,6 @@
 package com.Eleonor.ScreenMatch.models.serie;
 
+import com.Eleonor.ScreenMatch.dto.EpisodioDTO;
 import com.Eleonor.ScreenMatch.models.episodios.Episodio;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,7 +32,14 @@ public interface ISerieRepository extends JpaRepository<Serie,Long> {
     )
     List<Episodio> episodiosPorNombre(@Param("episodeTitle") String episodeTitle);
 
+    @Query(
+            value = "SELECT s FROM Serie s Join s.episodios e GROUP BY s ORDER By Max(e.fechaDeLanzamiento) DESC Limit 5"
+    )
+    List<Serie> nuevosLanzamientos();
 
-
+    @Query(
+            value = "SELECT e FROM Serie s JOIN s.episodios e WHERE s.id = :id AND e.temporada = :temporada "
+    )
+    List<Episodio> obtenerTemporadaPorNumero(@Param("id") Long id, @Param("temporada") Integer numero);
 }
 

@@ -17,7 +17,7 @@ public enum Categoria {
 
     Categoria (String categoriaOmdb, String categoriaEspanol){
         this.categoriaOmdb = categoriaOmdb;
-        this.categoriaEspanol =categoriaEspanol;
+        this.categoriaEspanol = categoriaEspanol;
     }
 
     public static Categoria fromString(String text){
